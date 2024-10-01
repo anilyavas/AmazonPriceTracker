@@ -1,13 +1,12 @@
 import { Text, View, Image, FlatList, Pressable, Linking } from 'react-native';
 
-import dummyProducts from '../../assets/search.json';
+import dummyProducts from '~/assets/search.json';
 
 const products = dummyProducts.slice(0, 20);
 
 export default function SearchResultScreen() {
   return (
     <View>
-      <Text className="text-xl">Search result</Text>
       <FlatList
         data={products}
         keyExtractor={(item) => item.asin}

@@ -6,7 +6,6 @@ export default function Home() {
   const [input, setInput] = useState('');
 
   const performSearch = () => {
-    console.warn('Search', input);
     //Search in db
 
     //Scrape amazon
