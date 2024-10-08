@@ -21,24 +21,48 @@ dayjs.extend(relativeTime);
 const products = dummyProducts.slice(0, 20);
 
 export default function SearchResultScreen() {
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const [search, setSearch] = useState();
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
+  const fetchSearch = () => {
     supabase
       .from('searches')
       .select('*')
       .eq('id', id)
       .single()
       .then(({ data }) => setSearch(data));
+  };
+  useEffect(() => {
+    fetchSearch();
+    fetchProducts();
+  }, [id]);
 
+  const fetchProducts = () => {
     supabase
       .from('product_search')
       .select('*,products(*)')
       .eq('search_id', id)
       .then(({ data }) => setProducts(data.map((d) => d.products)));
-  }, [id]);
+  };
+
+  useEffect(() => {
+    const subscription = supabase
+      .channel('supabase_realtime')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'searches' },
+        (payload) => {
+          if (payload.new?.id === parseInt(id, 10)) {
+            setSearch(payload.new);
+            fetchProducts();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const startScraping = async () => {
     const { data, error } = await supabase.functions.invoke('scrape-start', {
@@ -67,7 +91,7 @@ export default function SearchResultScreen() {
           <Pressable
             onPress={() => Linking.openURL(item.url)}
             className="flex-row items-center gap-2 bg-white p-3">
-            <Image source={{ uri: item.image }} className="h-20 w-20 " />
+            <Image source={{ uri: item.image }} className="h-20 w-20 " resizeMode="contain" />
             <Text className="flex-1" numberOfLines={4}>
               {item.name}
             </Text>
