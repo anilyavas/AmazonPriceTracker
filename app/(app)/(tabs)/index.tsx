@@ -5,28 +5,35 @@ import { useEffect, useState } from 'react';
 import { View, TextInput, Pressable, Text, FlatList } from 'react-native';
 
 import { useAuth } from '~/contexts/AuthContext';
+import { Tables } from '~/types/supabase';
 import { supabase } from '~/utils/supabase';
 
 dayjs.extend(relativeTime);
 
 export default function Home() {
   const [search, setSearch] = useState('');
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState<Tables<'searches'>[]>([]);
   const { user } = useAuth();
 
   const fetchHistory = () => {
+    if (!user) {
+      return;
+    }
     supabase
       .from('searches')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .then(({ data }) => setHistory(data));
+      .then(({ data }) => setHistory(data || []));
   };
   useEffect(() => {
     fetchHistory();
   }, []);
 
   const performSearch = async () => {
+    if (!user) {
+      return;
+    }
     //Search in db
     const { data, error } = await supabase
       .from('searches')
