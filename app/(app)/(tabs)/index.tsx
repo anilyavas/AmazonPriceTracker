@@ -49,6 +49,10 @@ export default function Home() {
       router.push(`/search/${data.id}`);
     }
 
+    if (error) {
+      return console.warn(error.message);
+    }
+
     //Scrape amazon
   };
   return (
