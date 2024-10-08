@@ -38,14 +38,24 @@ Deno.serve(async (req) => {
   const { error: productsError } = await supabase.from('products').upsert(products);
 
   console.log(productsError);
-  // link products with search ids
 
+  //save product snapshot
+
+  const productSnapshot = reqJson.map((p) => ({
+    asin: p.asin,
+    final_price: p.final_price,
+  }));
+  const { error: productSnapshotError } = await supabase
+    .from('product_snapshot')
+    .insert(productSnapshot);
+  console.log(productSnapshotError);
+
+  // link products with search ids
   const productSearchLinks = products.map((p) => ({
     asin: p.asin,
     search_id: id,
   }));
 
-  // might insert extra links when a product is updated and not new
   const { error: productSearchError } = await supabase
     .from('product_search')
     .upsert(productSearchLinks);
