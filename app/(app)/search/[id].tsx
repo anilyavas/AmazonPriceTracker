@@ -83,7 +83,11 @@ export default function SearchResultScreen() {
             <Pressable
               //onPress={() => Linking.openURL(item.url)}
               className="flex-row items-center gap-2 bg-white p-3">
-              <Image source={{ uri: item.image }} className="h-20 w-20 " resizeMode="contain" />
+              <Image
+                source={{ uri: item.image || '' }}
+                className="h-20 w-20 "
+                resizeMode="contain"
+              />
               <Text className="flex-1" numberOfLines={4}>
                 {item.name}
               </Text>
