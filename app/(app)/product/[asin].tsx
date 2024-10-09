@@ -59,7 +59,7 @@ export default function ProductDetails() {
               <Button
                 className="m-3"
                 title="Open on Amazon"
-                onPress={() => Linking.openURL(product.url)}
+                onPress={() => Linking.openURL(product.url || '')}
               />
             )}
             <Text className="mt-4 p-2 font-bold">Price history</Text>
