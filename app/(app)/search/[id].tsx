@@ -1,25 +1,13 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useLocalSearchParams } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import {
-  Text,
-  View,
-  Image,
-  FlatList,
-  Pressable,
-  Linking,
-  ActivityIndicator,
-  Button,
-} from 'react-native';
+import { Text, View, Image, FlatList, Pressable, ActivityIndicator, Button } from 'react-native';
 
-import dummyProducts from '~/assets/search.json';
 import { Tables } from '~/types/supabase';
 import { supabase } from '~/utils/supabase';
 
 dayjs.extend(relativeTime);
-
-const products = dummyProducts.slice(0, 20);
 
 export default function SearchResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -91,15 +79,17 @@ export default function SearchResultScreen() {
         keyExtractor={(item) => item.asin}
         contentContainerClassName="gap-2 p-2"
         renderItem={({ item }) => (
-          <Pressable
-            onPress={() => Linking.openURL(item.url)}
-            className="flex-row items-center gap-2 bg-white p-3">
-            <Image source={{ uri: item.image }} className="h-20 w-20 " resizeMode="contain" />
-            <Text className="flex-1" numberOfLines={4}>
-              {item.name}
-            </Text>
-            <Text>$ {item.final_price}</Text>
-          </Pressable>
+          <Link href={`/product/${item.asin}`} asChild>
+            <Pressable
+              //onPress={() => Linking.openURL(item.url)}
+              className="flex-row items-center gap-2 bg-white p-3">
+              <Image source={{ uri: item.image }} className="h-20 w-20 " resizeMode="contain" />
+              <Text className="flex-1" numberOfLines={4}>
+                {item.name}
+              </Text>
+              <Text>$ {item.final_price}</Text>
+            </Pressable>
+          </Link>
         )}
       />
     </View>
